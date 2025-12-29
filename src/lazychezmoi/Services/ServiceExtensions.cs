@@ -1,28 +1,22 @@
-using LazyChezmoi.Commands;
 using LazyChezmoi.Logging;
+using LazyChezmoi.Navigation;
+using LazyChezmoi.ViewModels;
+using LazyChezmoi.Views;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Serilog;
 using Serilog.Events;
+using Serilog.Filters;
 using Serilog.Formatting.Display;
-using Serilog.Sinks.SystemConsole.Themes;
+using Terminal.Gui.App;
+using Terminal.Gui.Views;
 
 namespace LazyChezmoi.Services;
 
 public static class ServiceExtensions
 {
-    public static IConfiguration CreateConfiguration()
-    {
-        var configBuilder = new ConfigurationBuilder().AddJsonFile(
-            "config.json",
-            optional: false,
-            reloadOnChange: true
-        );
-
-        return configBuilder.Build();
-    }
-
     public static void ConfigureSerilog(this ILoggingBuilder builder)
     {
         const string outputTemplate =
@@ -39,24 +33,114 @@ public static class ServiceExtensions
                 )
                 .Enrich.WithProperty("ApplicationName", "<APP NAME>")
                 .Enrich.With<SourceClassEnricher>()
-                .WriteTo.Console(
-                    outputTemplate: outputTemplate,
-                    theme: AnsiConsoleTheme.Sixteen,
-                    restrictedToMinimumLevel: LogEventLevel.Information
-                )
                 .CreateLogger()
         );
     }
 
-    public static IServiceCollection RegisterAppServices(this IServiceCollection services)
+    public static void AddTuiLogging(this HostApplicationBuilder builder)
     {
-        var configuration = CreateConfiguration();
+        builder.Services.AddSerilog(
+            (services, lc) =>
+            {
+                const string hostTemplate =
+                    "[{Timestamp:HH:mm:ss} {Level:u3}] {SourceContext}: {Message:lj}{NewLine}{Exception}";
+                const string appTemplate =
+                    "[{Timestamp:HH:mm:ss} {Level:u3}] ({SourceClass}) {Message:lj}{NewLine}{Exception}";
 
-        services.AddLogging(ConfigureSerilog);
-        services.AddSingleton(configuration);
-        services.AddSingleton<IService, ServiceImplementation>();
-        services.AddSingleton<MyCommands>();
-
-        return services;
+                lc.ReadFrom.Configuration(builder.Configuration)
+                    .Enrich.FromLogContext()
+                    .Enrich.With<SourceClassEnricher>()
+                    // Host Logs (Framework/System)
+                    .WriteTo.Conditional(
+                        evt =>
+                            Matching.FromSource("Microsoft").Invoke(evt)
+                            || Matching.FromSource("System").Invoke(evt),
+                        wt =>
+                            wt.File(
+                                "logs/host-.log",
+                                outputTemplate: hostTemplate,
+                                rollingInterval: RollingInterval.Day
+                            )
+                    )
+                    // App Logs (Business Logic)
+                    .WriteTo.Conditional(
+                        evt =>
+                            !Matching.FromSource("Microsoft").Invoke(evt)
+                            && !Matching.FromSource("System").Invoke(evt),
+                        wt =>
+                            wt.File(
+                                "logs/app-.log",
+                                outputTemplate: appTemplate,
+                                rollingInterval: RollingInterval.Day
+                            )
+                    );
+            }
+        );
     }
+
+    public static void AddTuiInfrastructure(this HostApplicationBuilder builder)
+    {
+        // Add custom config
+        builder.Configuration.AddJsonFile("config.json", optional: false, reloadOnChange: true);
+
+        // Core Terminal.Gui v2 Instance
+        builder.Services.AddSingleton(_ => Application.Create());
+
+        // MVVM Infrastructure
+        builder.Services.AddSingleton<INavigationService, NavigationService>();
+        builder.Services.AddSingleton<IDialogService, DialogService>();
+        builder.Services.AddSingleton<IAppLifetime, AppLifetime>();
+    }
+
+    public static void AddTuiScreens(this HostApplicationBuilder builder)
+    {
+        // ViewModels
+        builder.Services.AddSingleton<MainViewModel>();
+        builder.Services.AddTransient<HomeViewModel>();
+        builder.Services.AddTransient<SettingsViewModel>();
+
+        // Views
+        builder.Services.AddSingleton<MainShell>();
+        builder.Services.AddTransient<HomeView>();
+        builder.Services.AddTransient<SettingsView>();
+    }
+}
+
+public interface IDialogService
+{
+    bool Confirm(string title, string message);
+    void ShowError(string title, string message);
+}
+
+public class DialogService : IDialogService
+{
+    private readonly IApplication _app;
+
+    public DialogService(IApplication app)
+    {
+        _app = app;
+    }
+
+    public bool Confirm(string title, string message)
+    {
+        int? result = MessageBox.Query(_app, title, message);
+        return result == 0;
+    }
+
+    public void ShowError(string title, string message)
+    {
+        MessageBox.ErrorQuery(_app, title, message);
+    }
+}
+
+public interface IAppLifetime
+{
+    void Quit();
+}
+
+public class AppLifetime(IApplication app) : IAppLifetime
+{
+    private readonly IApplication _app = app;
+
+    public void Quit() => _app.RequestStop();
 }

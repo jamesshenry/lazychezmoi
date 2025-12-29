@@ -1,11 +1,11 @@
+using System.ComponentModel;
 using System.Diagnostics;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.Extensions.DependencyInjection;
-using Terminal.Gui.ViewBase;
 
 namespace LazyChezmoi.Navigation;
 
-public interface INavigationService
+public interface INavigationService : INotifyPropertyChanged
 {
     ObservableObject CurrentViewModel { get; }
     void NavigateTo<TViewModel>()
@@ -39,17 +39,4 @@ internal interface INavigationAware
 {
     void OnNavigatedTo();
     void OnNavigatedFrom();
-}
-
-public static class ViewLocator
-{
-    public static View GetView(IServiceProvider sp, object viewModel)
-    {
-        return viewModel switch
-        {
-            // DashboardViewModel => sp.GetRequiredService<DashboardView>(),
-            // SettingsViewModel => sp.GetRequiredService<SettingsView>(),
-            _ => throw new UnreachableException(),
-        };
-    }
 }

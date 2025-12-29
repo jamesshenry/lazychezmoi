@@ -1,9 +1,13 @@
-﻿using ConsoleAppFramework;
-using DotNetPathUtils;
+﻿using DotNetPathUtils;
+using lazychezmoi;
 using LazyChezmoi;
-using LazyChezmoi.Filters;
 using LazyChezmoi.Services;
+using LazyChezmoi.Views;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Serilog;
+using Terminal.Gui.App;
+using Terminal.Gui.Views;
 using Velopack;
 
 if (OperatingSystem.IsWindows())
@@ -17,15 +21,31 @@ if (OperatingSystem.IsWindows())
         .Run();
 }
 
-AppInitializer.Initialize();
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Debug()
+    .WriteTo.File("logs/bootstrap.log")
+    .CreateLogger();
 
-var services = new ServiceCollection();
+try
+{
+    var builder = Host.CreateApplicationBuilder(args);
+    builder.AddTuiLogging();
+    builder.AddTuiInfrastructure();
+    builder.AddTuiScreens();
 
-services.RegisterAppServices();
-ConsoleApp.ServiceProvider = services.BuildServiceProvider();
+    using IHost host = builder.Build();
 
-var app = ConsoleApp.Create();
+    var app = host.Services.GetRequiredService<IApplication>();
+    var mainShell = host.Services.GetRequiredService<MainShell>();
 
-app.UseFilter<ExceptionFilter>();
-
-await app.RunAsync(args);
+    app.Init();
+    app.Run(mainShell);
+}
+catch (Exception ex)
+{
+    Log.Fatal(ex, "Host terminated unexpectedly");
+}
+finally
+{
+    await Log.CloseAndFlushAsync();
+}

@@ -1,27 +1,27 @@
-using ConsoleAppFramework;
-using Microsoft.Extensions.Logging;
-using Spectre.Console;
+// using ConsoleAppFramework;
+// using Microsoft.Extensions.Logging;
+// using Spectre.Console;
 
-namespace LazyChezmoi.Filters;
+// namespace LazyChezmoi.Filters;
 
-internal sealed class ExceptionFilter(ConsoleAppFilter next, ILoggerFactory factory)
-    : ConsoleAppFilter(next)
-{
-    public override async Task InvokeAsync(
-        ConsoleAppContext context,
-        CancellationToken cancellationToken
-    )
-    {
-        var logger = factory.CreateLogger("Program");
+// internal sealed class ExceptionFilter(ConsoleAppFilter next, ILoggerFactory factory)
+//     : ConsoleAppFilter(next)
+// {
+//     public override async Task InvokeAsync(
+//         ConsoleAppContext context,
+//         CancellationToken cancellationToken
+//     )
+//     {
+//         var logger = factory.CreateLogger("Program");
 
-        try
-        {
-            await Next.InvokeAsync(context, cancellationToken);
-        }
-        catch (Exception ex)
-        {
-            AnsiConsole.MarkupLineInterpolated($"[red]{ex.Message}[/]");
-            logger.LogError(ex, "Program stopped");
-        }
-    }
-}
+//         try
+//         {
+//             await Next.InvokeAsync(context, cancellationToken);
+//         }
+//         catch (Exception ex)
+//         {
+//             AnsiConsole.MarkupLineInterpolated($"[red]{ex.Message}[/]");
+//             logger.LogError(ex, "Program stopped");
+//         }
+//     }
+// }
