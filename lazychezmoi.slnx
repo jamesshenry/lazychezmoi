@@ -1,0 +1,14 @@
+<Solution>
+  <Configurations>
+    <Platform Name="x64" />
+  </Configurations>
+  <Folder Name="/Solution Items/">
+    <File Path=".editorconfig" />
+    <File Path="dotnet.config" />
+  </Folder>
+  <Folder Name="/src/">
+    <Project Path="src/LazyChezmoi.Lib/LazyChezmoi.Lib.csproj" />
+    <Project Path="src/LazyChezmoi.Tests/LazyChezmoi.Tests.csproj" />
+    <Project Path="src/LazyChezmoi/LazyChezmoi.csproj" />
+  </Folder>
+</Solution>
