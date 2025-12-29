@@ -1,7 +1,6 @@
 ﻿using ConsoleAppFramework;
 using DotNetPathUtils;
 using LazyChezmoi;
-using LazyChezmoi.Commands;
 using LazyChezmoi.Filters;
 using LazyChezmoi.Services;
 using Microsoft.Extensions.DependencyInjection;
@@ -26,8 +25,6 @@ services.RegisterAppServices();
 ConsoleApp.ServiceProvider = services.BuildServiceProvider();
 
 var app = ConsoleApp.Create();
-
-app.Add<MyCommands>();
 
 app.UseFilter<ExceptionFilter>();
 

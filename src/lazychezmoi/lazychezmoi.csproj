@@ -12,6 +12,8 @@
     <EnableConfigurationBindingGenerator>true</EnableConfigurationBindingGenerator>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="CommunityToolkit.Diagnostics" Version="8.4.0" />
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
     <PackageReference Include="ConsoleAppFramework" Version="5.7.3">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
@@ -27,6 +29,7 @@
     <PackageReference Include="Serilog.Sinks.Console" Version="6.1.1" />
     <PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
     <PackageReference Include="Spectre.Console" Version="0.53.0" />
+    <PackageReference Include="Terminal.Gui" Version="2.0.0-develop.4746" />
     <PackageReference Include="Velopack" Version="0.0.1298" />
     <PackageReference Include="Xdg.Directories" Version="0.1.2" />
   </ItemGroup>
