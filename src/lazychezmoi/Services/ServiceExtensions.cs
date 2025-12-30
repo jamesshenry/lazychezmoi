@@ -1,4 +1,5 @@
 using LazyChezmoi.Logging;
+using LazyChezmoi.Modals;
 using LazyChezmoi.Navigation;
 using LazyChezmoi.ViewModels;
 using LazyChezmoi.Views;
@@ -98,11 +99,13 @@ public static class ServiceExtensions
         builder.Services.AddSingleton<MainViewModel>();
         builder.Services.AddTransient<HomeViewModel>();
         builder.Services.AddTransient<SettingsViewModel>();
+        builder.Services.AddTransient<ConfirmDialogViewModel>();
 
         // Views
         builder.Services.AddSingleton<MainShell>();
         builder.Services.AddTransient<HomeView>();
         builder.Services.AddTransient<SettingsView>();
+        builder.Services.AddTransient<ConfirmDialog>();
     }
 }
 

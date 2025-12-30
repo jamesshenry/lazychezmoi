@@ -1,5 +1,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+
+using LazyChezmoi.Modals;
 using LazyChezmoi.Navigation;
 using LazyChezmoi.Services;
 
@@ -29,8 +31,11 @@ public partial class SettingsViewModel : ObservableObject
     private void Save()
     {
         // In a real app, you'd save this to config.json here
-        _dialogService.ShowError("Success", $"Settings saved for {Username}!");
-        _navService.NavigateTo<HomeViewModel>();
+        if (_navService.ShowModal<ConfirmDialogViewModel,bool>())
+        {
+            _navService.NavigateTo<HomeViewModel>();
+        }
+
     }
 
     [RelayCommand]

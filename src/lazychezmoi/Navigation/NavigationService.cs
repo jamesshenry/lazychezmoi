@@ -11,6 +11,8 @@ public interface INavigationService : INotifyPropertyChanged
     ObservableObject CurrentViewModel { get; }
     void NavigateTo<TViewModel>()
         where TViewModel : ObservableObject;
+    TResult? ShowModal<TViewModel, TResult>(Action<TViewModel>? configure = null) where TViewModel : class, IModalViewModel<TResult>;
+
     event EventHandler<EventArgs>? ScreenChanged;
 }
 

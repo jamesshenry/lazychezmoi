@@ -64,8 +64,8 @@ public class SettingsView : View
         };
 
         // UI Commands
-        btnSave.Accepted += (s, e) => _viewModel.SaveCommand.Execute(null);
-        btnCancel.Accepted += (s, e) => _viewModel.CancelCommand.Execute(null);
+        btnSave.Accepting += (s, e) => _viewModel.SaveCommand.Execute(null);
+        btnCancel.Accepting += (s, e) => _viewModel.CancelCommand.Execute(null);
 
         Add(lblName, txtName, chkLog, btnSave, btnCancel);
     }

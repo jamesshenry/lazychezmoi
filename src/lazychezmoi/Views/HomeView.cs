@@ -29,13 +29,9 @@ public class HomeView : View
             Text = "Go Settings",
         };
 
-        btn.Accepting += SettingsBtnClicked;
+        btn.Accepting += (s, e) => _vm.NavigateSettingsCommand.Execute(null);
         Add(lbl);
         Add(btn);
     }
 
-    private void SettingsBtnClicked(object? sender, CommandEventArgs e)
-    {
-        _vm.NavigateSettingsCommand.Execute(null);
-    }
 }

@@ -13,7 +13,7 @@ public static class ViewLocator
         {
             HomeViewModel => sp.GetRequiredService<HomeView>(),
             SettingsViewModel => sp.GetRequiredService<SettingsView>(),
-            ConfirmViewModel => sp.GetRequiredService<ConfirmView>(), // Inherits Dialog
+            ConfirmDialogViewModel => sp.GetRequiredService<ConfirmDialog>(), // Inherits Dialog
             _ => throw new ArgumentException($"No view registered for {viewModel.GetType()}"),
         };
 }
