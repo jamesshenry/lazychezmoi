@@ -1,4 +1,5 @@
 using LazyChezmoi.ViewModels;
+using Terminal.Gui.Input;
 using Terminal.Gui.ViewBase;
 using Terminal.Gui.Views;
 
@@ -6,8 +7,11 @@ namespace LazyChezmoi.Views;
 
 public class HomeView : View
 {
+    private readonly HomeViewModel _vm;
+
     public HomeView(HomeViewModel vm)
     {
+        _vm = vm;
         Width = Dim.Fill();
         Height = Dim.Fill();
 
@@ -17,6 +21,21 @@ public class HomeView : View
             Y = Pos.Center(),
             Text = vm.WelcomeMessage,
         };
+
+        var btn = new Button
+        {
+            X = Pos.Center(),
+            Y = Pos.Bottom(lbl),
+            Text = "Go Settings",
+        };
+
+        btn.Accepting += SettingsBtnClicked;
         Add(lbl);
+        Add(btn);
+    }
+
+    private void SettingsBtnClicked(object? sender, CommandEventArgs e)
+    {
+        _vm.NavigateSettingsCommand.Execute(null);
     }
 }

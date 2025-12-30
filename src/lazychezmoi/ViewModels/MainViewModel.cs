@@ -5,13 +5,13 @@ using LazyChezmoi.Services;
 
 namespace LazyChezmoi.ViewModels;
 
-public partial class MainViewModel : ObservableObject
+public partial class MainViewModel : ObservableObject, INavigationAware
 {
     private readonly INavigationService _navigationService;
     private readonly IDialogService _dialogService;
 
     [ObservableProperty]
-    private string _appTitle = "LazyChezmoi v2.0";
+    private string _appTitle = "lazychezmoi";
 
     [ObservableProperty]
     private string _statusText = "Ready";
@@ -20,6 +20,16 @@ public partial class MainViewModel : ObservableObject
     {
         _navigationService = navigationService;
         _dialogService = dialogService;
+    }
+
+    public void OnNavigatedFrom()
+    {
+        throw new NotImplementedException();
+    }
+
+    public void OnNavigatedTo()
+    {
+        throw new NotImplementedException();
     }
 
     [RelayCommand]

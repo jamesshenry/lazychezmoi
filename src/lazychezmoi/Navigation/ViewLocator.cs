@@ -1,3 +1,4 @@
+using LazyChezmoi.Modals;
 using LazyChezmoi.ViewModels;
 using LazyChezmoi.Views;
 using Microsoft.Extensions.DependencyInjection;
@@ -12,6 +13,7 @@ public static class ViewLocator
         {
             HomeViewModel => sp.GetRequiredService<HomeView>(),
             SettingsViewModel => sp.GetRequiredService<SettingsView>(),
+            ConfirmViewModel => sp.GetRequiredService<ConfirmView>(), // Inherits Dialog
             _ => throw new ArgumentException($"No view registered for {viewModel.GetType()}"),
         };
 }

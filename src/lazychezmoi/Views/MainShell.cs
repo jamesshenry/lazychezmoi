@@ -1,6 +1,11 @@
 using System.ComponentModel;
+using System.Xml.Linq;
+
+using CommunityToolkit.Mvvm.ComponentModel;
+
 using LazyChezmoi.Navigation;
 using LazyChezmoi.ViewModels;
+
 using Terminal.Gui.ViewBase;
 using Terminal.Gui.Views;
 
@@ -37,7 +42,7 @@ public class MainShell : Window
             X = 0,
             Y = 0,
             Width = Dim.Fill(),
-            Height = Dim.Fill() - 1, // Leave room for status bar
+            Height = Dim.Fill() - 3, // Leave room for status bar
         };
 
         Add(_contentContainer, _statusLabel);
@@ -48,6 +53,25 @@ public class MainShell : Window
 
         // Initial Navigation
         _viewModel.NavigateHomeCommand.Execute(null);
+
+        navService.PropertyChanged += (s, e) => {
+            if (e.PropertyName == nameof(INavigationService.CurrentViewModel))
+            {
+                _contentContainer.RemoveAll();
+
+                var newView = ViewLocator.GetView(_serviceProvider, _navService.CurrentViewModel);
+                newView.Width = Dim.Fill();
+                newView.Height = Dim.Fill();
+
+                _contentContainer.Add(newView);
+                newView.SetFocus();
+            }
+        };
+    }
+
+    private void NavService_ScreenChanged(object? sender, EventArgs e)
+    {
+        throw new NotImplementedException();
     }
 
     private void OnViewModelPropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -64,7 +88,7 @@ public class MainShell : Window
         }
     }
 
-    private void UpdateContent(object? viewModel)
+    private void UpdateContent(ObservableObject? viewModel)
     {
         if (viewModel == null)
             return;

@@ -1,9 +1,0 @@
-{
-    "profiles": {
-        "LazyChezmoi": {
-            "commandName": "Project",
-            "commandLineArgs": "",
-            "workingDirectory": "..\\"
-        }
-    }
-}
