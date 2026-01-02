@@ -1,4 +1,5 @@
 using System.Text.Json.Serialization;
+using Microsoft.Extensions.Configuration;
 
 namespace LazyChezmoi.Configuration;
 
@@ -6,6 +7,8 @@ public class LazyChezmoiSettings
 {
     public int Port { get; set; }
     public bool Enabled { get; set; }
+
+    [ConfigurationKeyName("api-url")]
     public string? ApiUrl { get; set; }
 }
 

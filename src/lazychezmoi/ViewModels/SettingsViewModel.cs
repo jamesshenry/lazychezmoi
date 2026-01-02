@@ -1,9 +1,9 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-
-using LazyChezmoi.Modals;
 using LazyChezmoi.Navigation;
 using LazyChezmoi.Services;
+using LazyChezmoi.Views;
+using Microsoft.Extensions.Logging;
 
 namespace LazyChezmoi.ViewModels;
 
@@ -11,6 +11,7 @@ public partial class SettingsViewModel : ObservableObject
 {
     private readonly IDialogService _dialogService;
     private readonly INavigationService _navService;
+    private readonly ILogger<SettingsViewModel> _logger;
 
     [ObservableProperty]
     private string _username = "Guest";
@@ -21,21 +22,29 @@ public partial class SettingsViewModel : ObservableObject
     [ObservableProperty]
     private string _theme = "Base";
 
-    public SettingsViewModel(IDialogService dialogService, INavigationService navService)
+    public SettingsViewModel(
+        IDialogService dialogService,
+        INavigationService navService,
+        ILogger<SettingsViewModel> logger
+    )
     {
         _dialogService = dialogService;
         _navService = navService;
+        _logger = logger;
     }
 
     [RelayCommand]
     private void Save()
     {
-        // In a real app, you'd save this to config.json here
-        if (_navService.ShowModal<ConfirmDialogViewModel,bool>())
+        if (_dialogService.Confirm("Save?", "Save settings?"))
         {
+            _logger.LogInformation("Settings saved");
             _navService.NavigateTo<HomeViewModel>();
         }
-
+        else
+        {
+            _logger.LogInformation("Not saved");
+        }
     }
 
     [RelayCommand]

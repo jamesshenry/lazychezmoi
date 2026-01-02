@@ -1,3 +1,6 @@
+using Kuddle.Extensions.Configuration;
+using Kuddle.Serialization;
+using LazyChezmoi.Configuration;
 using LazyChezmoi.Logging;
 using LazyChezmoi.Modals;
 using LazyChezmoi.Navigation;
@@ -81,8 +84,11 @@ public static class ServiceExtensions
 
     public static void AddTuiInfrastructure(this HostApplicationBuilder builder)
     {
-        // Add custom config
-        builder.Configuration.AddJsonFile("config.json", optional: false, reloadOnChange: true);
+        builder.Configuration.Sources.Clear();
+
+        builder.Configuration.AddKdlFile("config.kdl");
+        var settings = new LazyChezmoiSettings();
+        builder.Configuration.GetSection("lazy-chezmoi-settings").Bind(settings);
 
         // Core Terminal.Gui v2 Instance
         builder.Services.AddSingleton(_ => Application.Create());
@@ -111,7 +117,8 @@ public static class ServiceExtensions
 
 public interface IDialogService
 {
-    bool Confirm(string title, string message);
+    bool Confirm(string title, string message, string okText = "Yes", string cancelText = "No");
+    void ShowInfo(string title, string message);
     void ShowError(string title, string message);
 }
 
@@ -124,10 +131,20 @@ public class DialogService : IDialogService
         _app = app;
     }
 
-    public bool Confirm(string title, string message)
+    public bool Confirm(
+        string title,
+        string message,
+        string okText = "Yes",
+        string cancelText = "No"
+    )
     {
-        int? result = MessageBox.Query(_app, title, message);
+        int? result = MessageBox.Query(_app, title, message, okText, cancelText);
         return result == 0;
+    }
+
+    public void ShowInfo(string title, string message)
+    {
+        MessageBox.Query(_app, title, message, "Ok");
     }
 
     public void ShowError(string title, string message)

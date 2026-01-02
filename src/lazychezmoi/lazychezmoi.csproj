@@ -14,7 +14,8 @@
     <PackageReference Include="CommunityToolkit.Diagnostics" Version="8.4.0" />
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
     <PackageReference Include="DotNetPathUtils" Version="0.3.1" />
-    <PackageReference Include="Kuddle.Net" Version="0.4.0" />
+    <PackageReference Include="Kuddle.Net" Version="0.4.1" />
+    <PackageReference Include="Kuddle.Net.Extensions.Configuration" Version="0.4.1" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.0" />
     <PackageReference Include="MinVer" Version="6.0.0">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -32,7 +33,7 @@
     <PackageReference Include="Xdg.Directories" Version="0.1.2" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="config.json">
+    <None Include="config.kdl">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
