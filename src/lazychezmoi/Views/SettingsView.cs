@@ -6,67 +6,69 @@ namespace LazyChezmoi.Views;
 
 public class SettingsView : View
 {
-    private readonly SettingsViewModel _viewModel;
+    private readonly SettingsViewModel _vm;
+    private Label _lblName = default!;
+    private TextField _txtName = default!;
+    private CheckBox _chkLog = default!;
+    private Button _btnSave = default!;
+    private Button _btnCancel = default!;
 
     public SettingsView(SettingsViewModel viewModel)
     {
-        _viewModel = viewModel;
-        Width = Dim.Fill();
-        Height = Dim.Fill();
+        _vm = viewModel;
+        InitializeComponent();
+        BindViewModel();
+    }
 
-        // --- UI Elements ---
+    private void BindViewModel()
+    {
+        _txtName.TextChanged += (_, args) => _vm.Username = _txtName.Text;
+        _chkLog.Accepted += (_, args) =>
+            _vm.EnableLogging = _chkLog.CheckedState == CheckState.Checked;
+        _btnSave.Accepting += (s, e) => _vm.SaveCommand.Execute(null);
+        _btnCancel.Accepting += (s, e) => _vm.CancelCommand.Execute(null);
 
-        var lblName = new Label { Text = "Username:" };
-        var txtName = new TextField
+        _vm.PropertyChanged += (s, e) =>
         {
-            X = Pos.Right(lblName) + 2,
-            Width = Dim.Fill(5),
-            Text = _viewModel.Username,
-        };
-
-        var chkLog = new CheckBox
-        {
-            Y = Pos.Bottom(lblName) + 1,
-            Text = "Enable Background Logging",
-            CheckedState = _viewModel.EnableLogging ? CheckState.Checked : CheckState.UnChecked,
-        };
-
-        var btnSave = new Button
-        {
-            X = 0,
-            Y = Pos.Bottom(chkLog) + 2,
-            Text = "Save Settings",
-        };
-
-        var btnCancel = new Button
-        {
-            X = Pos.Right(btnSave) + 2,
-            Y = Pos.Y(btnSave),
-            Text = "Cancel",
-        };
-
-        // --- THE GLUE (Manual Binding) ---
-
-        // View -> ViewModel
-        txtName.TextChanged += (_, args) => _viewModel.Username = txtName.Text;
-        chkLog.Accepted += (_, args) =>
-            _viewModel.EnableLogging = chkLog.CheckedState == CheckState.Checked;
-
-        // ViewModel -> View (Optional: only if VM properties change from logic)
-        _viewModel.PropertyChanged += (s, e) =>
-        {
-            if (e.PropertyName == nameof(_viewModel.Username))
-                txtName.Text = _viewModel.Username;
-            if (e.PropertyName == nameof(_viewModel.EnableLogging))
-                chkLog.CheckedState = _viewModel.EnableLogging
+            if (e.PropertyName == nameof(_vm.Username))
+                _txtName.Text = _vm.Username;
+            if (e.PropertyName == nameof(_vm.EnableLogging))
+                _chkLog.CheckedState = _vm.EnableLogging
                     ? CheckState.Checked
                     : CheckState.UnChecked;
         };
+    }
 
-        // UI Commands
-        btnSave.Accepting += (s, e) => _viewModel.SaveCommand.Execute(null);
-        btnCancel.Accepting += (s, e) => _viewModel.CancelCommand.Execute(null);
+    private void InitializeComponent()
+    {
+        CanFocus = true;
+        Width = Dim.Fill();
+        Height = Dim.Fill();
 
-        Add(lblName, txtName, chkLog, btnSave, btnCancel);
+        _lblName = new Label { Text = "Username:" };
+        _txtName = new TextField { X = Pos.Right(_lblName) + 2, Width = Dim.Fill(5) };
+
+        _chkLog = new CheckBox
+        {
+            Y = Pos.Bottom(_lblName) + 1,
+            Text = "Enable Background Logging",
+            CheckedState = _vm.EnableLogging ? CheckState.Checked : CheckState.UnChecked,
+        };
+
+        _btnSave = new Button
+        {
+            X = 0,
+            Y = Pos.Bottom(_chkLog) + 2,
+            Text = "Save Settings",
+        };
+
+        _btnCancel = new Button
+        {
+            X = Pos.Right(_btnSave) + 2,
+            Y = Pos.Y(_btnSave),
+            Text = "Cancel",
+        };
+
+        Add(_lblName, _txtName, _chkLog, _btnSave, _btnCancel);
     }
 }

@@ -1,5 +1,4 @@
 using LazyChezmoi.ViewModels;
-using Terminal.Gui.Input;
 using Terminal.Gui.ViewBase;
 using Terminal.Gui.Views;
 
@@ -33,5 +32,4 @@ public class HomeView : View
         Add(lbl);
         Add(btn);
     }
-
 }
